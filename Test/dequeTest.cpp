@@ -4,6 +4,7 @@
 
 using namespace PracticeStl;
 static int res = 0;
+
 template<typename T, typename C>
 static int compare(const std::initializer_list<T>& vs, C& con)
 {
@@ -22,7 +23,6 @@ static int compare(const std::initializer_list<T>& vs, C& con)
 
 static void testcase_construct()
 {
-
 	{
 		deque<int> test;
 		assert(test.size() == 0);
@@ -104,46 +104,48 @@ static void testcase_push_pop()
 	assert(test.empty() == true);
 }
 
-//static void testcase_macroscopic()
-//{
-//	list<int> test = { 1, 3, 5, 6, 8 };
-//	test.clear();
-//	assert(test.size() == 0);
-//	assert(test.empty() == true);
-//}
-//
-//static void testcase_insert_erase()
-//{
-//	list<int> test = { 1, 2, 3 };
-//	test.insert(test.begin(), 111);
-//	res = compareList({ 111, 1, 2, 3 }, test);
-//	assert(res == 0);
-//
-//	test.insert(test.end(), 111);
-//	res = compareList({ 111, 1, 2, 3, 111 }, test);
-//	assert(res == 0);
-//
-//	test.insert(test.end(), 123);
-//	res = compareList({ 111, 1, 2, 3, 111, 123 }, test);
-//	assert(res == 0);
-//
-//	test.erase(test.begin());
-//	res = compareList({ 1, 2, 3, 111, 123 }, test);
-//	assert(res == 0);
-//
-//	test.erase(--test.end());
-//	res = compareList({ 1, 2, 3, 111 }, test);
-//	assert(res == 0);
-//
-//	test.erase(++test.begin(), --test.end());
-//	res = compareList({ 1, 111 }, test);
-//	assert(res == 0);
-//}
+static void testcase_macroscopic()
+{
+	deque<int> test = { 1, 3, 5, 6, 8 };
+
+	test.clear();
+	assert(test.size() == 0);
+	assert(test.empty() == true);
+}
+
+static void testcase_insert_erase()
+{
+	deque<int> test = { 1, 2, 3 };
+	test.insert(test.begin(), 111);
+	res = compare({ 111, 1, 2, 3 }, test);
+	assert(res == 0);
+
+	test.insert(test.end(), 111);
+	res = compare({ 111, 1, 2, 3, 111 }, test);
+	assert(res == 0);
+
+	test.insert(test.begin() + 3, 123);
+	res = compare({ 111, 1, 2, 123, 3, 111 }, test);
+	assert(res == 0);
+
+	test.erase(test.begin());
+	res = compare({ 1, 2, 123, 3, 111 }, test);
+	assert(res == 0);
+
+	test.erase(test.end() - 1);
+	res = compare({ 1, 2, 123, 3 }, test);
+	assert(res == 0);
+
+	test.erase(test.begin() + 1, test.end() - 1);
+	res = compare({ 1, 3 }, test);
+	assert(res == 0);
+}
 
 void TestUnits::DequeTest::test_all()
 {
 	testcase_construct();
 	testcase_traverse();
 	testcase_push_pop();
-	//testcase_insert_erase();
+	testcase_macroscopic();
+	testcase_insert_erase();
 }

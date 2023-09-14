@@ -171,20 +171,35 @@ namespace PracticeStl
 
 		iterator begin() { return this->start; }
 		iterator end() { return this->finish; }
+		iterator cbegin() { return this->start; }
+		iterator cend() { return this->finish; }
 		reference operator[](size_type n) { return this->start[difference_type(n)]; }
 		reference front() { return *this->start; }
 		reference back() { return *(this->finish - 1); }
 		size_type size() const { return  (this->map) ? (this->finish - this->start) : 0; }
 		bool empty() const { return this->finish == this->start; }
 
-		void push_back(const_reference x) { this->insert(this->finish, x); }
-		void push_front(const_reference x) { this->insert(this->start, x); }
-		void pop_back() { this->erase(--(this->finish)); }
+		void push_back(const_reference x)
+		{
+			this->insert(this->finish, x);
+		}
+		void push_front(const_reference x)
+		{
+			this->insert(this->start, x);
+		}
+		void pop_back() { this->erase(this->finish - 1); }
 		void pop_front() { this->erase(this->start); }
 		void clear() { this->erase(this->start, this->finish); }
 
 		iterator insert(iterator pos, const_reference x)
 		{
+			if (this->map == nullptr)
+			{
+				this->init_map_and_nodes(1);
+				construct(this->start.cur, x);
+				return this->start;
+			}
+
 			if (pos.cur == this->start.cur)
 			{
 				if (this->start.cur != this->start.first)
@@ -251,18 +266,86 @@ namespace PracticeStl
 			if (index < (this->size() / 2))
 			{
 				std::copy_backward(this->start, pos, next);
-				this->pop_front();
+				if (this->start.cur + 1 == this->start.last)
+				{
+					destroy(this->start.cur);
+					this->dealloc_node(this->start.first);
+					this->start.set_map_slot(this->start.map_slot + 1);
+					this->start.cur = this->start.first;
+				}
+				else
+				{
+					destroy(this->start.cur);
+					++(this->start.cur);
+				}
 			}
 			else
 			{
 				std::copy(next, this->finish, pos);
-				this->pop_back();
+				if (this->finish.cur == this->finish.first)
+				{
+					this->dealloc_node(this->finish.first);
+					this->finish.set_map_slot(this->finish.map_slot - 1);
+					this->finish.cur = this->finish.last - 1;
+					destroy(this->finish.cur);
+				}
+				else
+				{
+					--(this->finish.cur);
+					destroy(this->finish.cur);
+				}
 			}
 			return this->start + index;
 		}
 		iterator erase(iterator first, iterator last)
 		{
-
+			if (first == this->start && last == this->finish)
+			{
+				for (map_pointer node = start.map_slot + 1; node < finish.map_slot; ++node)
+				{
+					destroy(*node, *node + this->node_size);
+					this->dealloc_node(*node);
+				}
+				if (start.map_slot != finish.map_slot)
+				{
+					destroy(start.cur, start.last);
+					destroy(finish.first, finish.cur);
+				}
+				else
+				{
+					destroy(start.cur, finish.cur);
+				}
+				finish = start;
+				return finish;
+			}
+			else
+			{
+				size_type n = size_type(last - first);
+				size_type e_before = size_type(first - this->start);
+				if (e_before < (this->size() - n) / 2)
+				{
+					std::copy_backward(start, first, last);
+					iterator new_start = start + n;
+					destroy(start, new_start);
+					for (map_pointer cur = start.map_slot; cur < new_start.map_slot; ++cur)
+					{
+						this->dealloc_node(*cur);
+					}
+					start = new_start;
+				}
+				else
+				{
+					std::copy(last, finish, first);
+					iterator new_finish = finish - n;
+					destroy(new_finish, finish);
+					for (map_pointer cur = new_finish.map_slot + 1; cur <= finish.map_slot; ++cur)
+					{
+						this->dealloc_node(*cur);
+					}
+					finish = new_finish;
+				}
+				return start + e_before;
+			}
 		}
 
 
@@ -319,11 +402,8 @@ namespace PracticeStl
 				size_type new_map_size = this->map_size * 2 + 2;
 				map_pointer new_map = this->alloc_map(new_map_size);
 				new_nstart = new_map + (new_map_size - new_node_n) / 2 + (at_front ? 1 : 0);
-				if (this->map)
-				{
-					std::copy(this->start.map_slot, this->finish.map_slot + 1, new_nstart);
-					this->dealloc_map(this->map);
-				}
+				std::copy(this->start.map_slot, this->finish.map_slot + 1, new_nstart);
+				this->dealloc_map(this->map);
 				this->map = new_map;
 				this->map_size = new_map_size;
 			}
