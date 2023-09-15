@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ListTest
+namespace StackTest
 {
 	void test_all();
 }

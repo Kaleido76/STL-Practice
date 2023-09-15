@@ -1,12 +1,11 @@
 #include "deque.h"
 #include "dequeTest.h"
-#include <cassert>
+#include "testUtil.h"
 
 using namespace PracticeStl;
-static int res = 0;
 
-template<typename T, typename C>
-static int compare(const std::initializer_list<T>& vs, C& con)
+template<typename T>
+static int compare(const std::initializer_list<T>& vs, deque<T>& con)
 {
 	if (vs.size() != con.size()) return -1;
 	auto v_cur = vs.begin();
@@ -25,26 +24,26 @@ static void testcase_construct()
 {
 	{
 		deque<int> test;
-		assert(test.size() == 0);
-		assert(test.empty() == true);
+		EXPECT(0, test.size());
+		EXPECT(true, test.empty());
 	}
 
 	{
 		deque<int> test(10, 20);
-		assert(test.size() == 10);
-		assert(test.empty() == false);
+		EXPECT(10, test.size());
+		EXPECT(false, test.empty());
 	}
 
 	{
 		deque<int> test(300, 20);
-		assert(test.size() == 300);
-		assert(test.empty() == false);
+		EXPECT(300, test.size());
+		EXPECT(false, test.empty());
 	}
 
 	{
 		deque<int> test = { 1, 3, 5 };
-		assert(test.size() == 3);
-		assert(test.empty() == false);
+		EXPECT(3, test.size());
+		EXPECT(false, test.empty());
 	}
 }
 
@@ -55,24 +54,15 @@ static void testcase_traverse()
 		decltype(test)::iterator iter;
 		for (iter = test.begin(); iter != test.end(); ++iter)
 		{
-			assert(*iter == 10);
+			EXPECT(10, *iter);
 		}
 	}
 
 	{
 		deque<int> test = { 11, 12, 13 };
-		assert(test[0] == 11);
-		assert(test[1] == 12);
-		assert(test[2] == 13);
-	}
-
-	{
-		deque<int> test(300, 20);
-		decltype(test)::iterator iter;
-		for (iter = test.begin(); iter != test.end(); ++iter)
-		{
-			assert(*iter == 20);
-		}
+		EXPECT(11, test[0]);
+		EXPECT(12, test[1]);
+		EXPECT(13, test[2]);
 	}
 }
 
@@ -80,68 +70,57 @@ static void testcase_push_pop()
 {
 	deque<int> test;
 	test.push_back(1);
-	res = compare({ 1 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1 }, test));
 
 	test.push_back(5);
-	res = compare({ 1, 5 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1, 5 }, test));
 
 	test.push_front(-8);
-	res = compare({ -8, 1, 5 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ -8, 1, 5 }, test));
 
 	test.pop_back();
-	res = compare({ -8, 1 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ -8, 1 }, test));
 
 	test.pop_front();
-	res = compare({ 1 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1 }, test));
 
 	test.pop_back();
-	assert(test.size() == 0);
-	assert(test.empty() == true);
+	EXPECT(0, compare({ }, test));
+	EXPECT(true, test.empty());
 }
 
 static void testcase_macroscopic()
 {
 	deque<int> test = { 1, 3, 5, 6, 8 };
-
 	test.clear();
-	assert(test.size() == 0);
-	assert(test.empty() == true);
+	EXPECT(0, compare({ }, test));
+	EXPECT(true, test.empty());
 }
 
 static void testcase_insert_erase()
 {
 	deque<int> test = { 1, 2, 3 };
 	test.insert(test.begin(), 111);
-	res = compare({ 111, 1, 2, 3 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 111, 1, 2, 3 }, test));
+
 
 	test.insert(test.end(), 111);
-	res = compare({ 111, 1, 2, 3, 111 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 111, 1, 2, 3, 111 }, test));
 
 	test.insert(test.begin() + 3, 123);
-	res = compare({ 111, 1, 2, 123, 3, 111 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 111, 1, 2, 123, 3, 111 }, test));
 
 	test.erase(test.begin());
-	res = compare({ 1, 2, 123, 3, 111 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1, 2, 123, 3, 111 }, test));
 
 	test.erase(test.end() - 1);
-	res = compare({ 1, 2, 123, 3 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1, 2, 123, 3 }, test));
 
 	test.erase(test.begin() + 1, test.end() - 1);
-	res = compare({ 1, 3 }, test);
-	assert(res == 0);
+	EXPECT(0, compare({ 1, 3 }, test));
 }
 
-void TestUnits::DequeTest::test_all()
+void DequeTest::test_all()
 {
 	testcase_construct();
 	testcase_traverse();

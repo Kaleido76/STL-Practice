@@ -1,9 +1,7 @@
 #pragma once
+#include "testUtil.h"
 
-namespace TestUnits
+namespace DequeTest
 {
-	namespace DequeTest
-	{
-		void test_all();
-	}
+	void test_all();
 }

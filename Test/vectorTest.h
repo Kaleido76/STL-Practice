@@ -1,9 +1,6 @@
 #pragma once
 
-namespace TestUnits
+namespace VectorTest
 {
-	namespace VectorTest
-	{
-		void test_all();
-	}
+	void test_all();
 }

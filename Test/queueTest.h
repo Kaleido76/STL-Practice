@@ -1,7 +1,6 @@
 #pragma once
 
-namespace ListTest
+namespace QueueTest
 {
 	void test_all();
 }
-

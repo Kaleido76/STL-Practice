@@ -171,22 +171,16 @@ namespace PracticeStl
 
 		iterator begin() { return this->start; }
 		iterator end() { return this->finish; }
-		iterator cbegin() { return this->start; }
-		iterator cend() { return this->finish; }
+		const_iterator cbegin() const { return this->start; }
+		const_iterator cend() const { return this->finish; }
 		reference operator[](size_type n) { return this->start[difference_type(n)]; }
 		reference front() { return *this->start; }
 		reference back() { return *(this->finish - 1); }
 		size_type size() const { return  (this->map) ? (this->finish - this->start) : 0; }
 		bool empty() const { return this->finish == this->start; }
 
-		void push_back(const_reference x)
-		{
-			this->insert(this->finish, x);
-		}
-		void push_front(const_reference x)
-		{
-			this->insert(this->start, x);
-		}
+		void push_back(const_reference x) { this->insert(this->finish, x); }
+		void push_front(const_reference x) { this->insert(this->start, x); }
 		void pop_back() { this->erase(this->finish - 1); }
 		void pop_front() { this->erase(this->start); }
 		void clear() { this->erase(this->start, this->finish); }
